@@ -1,202 +1,788 @@
+Here is an HTML document that creates an interactive 3D tribute to Albert Einstein. It features a color-changing 3D book with his complete biography, a 20-question quiz where each correct answer reveals a new prize photo, and an animated fantasy background with named fighters, a dragon, glowing trees, and animals.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kortlagudem Free Computer Centre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Einstein: 3D Epic Book | Legendary Fighters & History</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            box-sizing: border-box;
+            user-select: none;
         }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-        header h1 {
+        body {
             margin: 0;
-            font-size: 2.5em;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            color: #f0e6d2;
+            background-color: #030318;
         }
-        header p {
-            font-size: 1.2em;
-            margin-top: 10px;
-            color: #1abc9c;
-            font-weight: bold;
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
-        .btn {
-            display: inline-block;
-            background-color: #1abc9c;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-top: 15px;
-            transition: background 0.3s;
+        .content {
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+            width: 100%;
+            min-height: 100vh;
+            backdrop-filter: blur(2px);
         }
-        .btn:hover {
-            background-color: #16a085;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        section {
-            background: white;
-            margin-bottom: 30px;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #2c3e50;
-            border-bottom: 2px solid #1abc9c;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .card {
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 6px;
-            border-left: 5px solid #1abc9c;
+        .hero {
+            height: 28vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
         }
-        .card h3 {
-            margin-top: 0;
-            color: #2c3e50;
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 100, 150, 0.9), 0 0 15px rgba(0,255,255,0.5);
+            animation: fadeInUp 1s ease;
         }
-        .partner-list {
+        .hero .sub { font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9; }
+        .hero .quote {
+            max-width: 600px;
+            margin-top: 0.6rem;
+            font-style: italic;
+            background: rgba(0,0,0,0.55);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            border-left: 4px solid #ff66aa;
+            font-size: 0.8rem;
+        }
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 0.6rem 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 100, 150, 0.5);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            color: #ffccaa;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            transition: 0.3s;
+        }
+        .tab-btn i { margin-right: 6px; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff66aa, #aa66ff);
+            color: #0a0a1a;
+            box-shadow: 0 0 15px rgba(255, 100, 170, 0.8);
+        }
+        .tab-panel {
+            display: none;
+            padding: 1.5rem 1rem;
+            animation: fadeIn 0.4s ease;
+        }
+        .tab-panel.active-panel { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .container { max-width: 1300px; margin: 0 auto; }
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ffaa66, #ff66cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ff66aa;
+            display: inline-block;
+            padding-bottom: 0.2rem;
+        }
+        .title-wrap { text-align: center; margin-bottom: 1rem; }
+
+        /* 3D COLOR BOOK */
+        .book-3d-wrapper {
+            display: flex;
+            justify-content: center;
+            perspective: 2000px;
+            margin: 1rem auto;
+        }
+        .real-book {
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            animation: bookGlow 3s infinite alternate;
+        }
+        @keyframes bookGlow {
+            0% { filter: drop-shadow(0 0 8px rgba(255, 100, 150, 0.5)); }
+            100% { filter: drop-shadow(0 0 25px rgba(100, 150, 255, 0.8)); }
+        }
+        .real-book.flipped { transform: rotateY(-180deg); }
+        .book-cover, .book-back {
+            width: 100%;
+            background: linear-gradient(145deg, #2a1a2a, #1a0a2a);
+            border-radius: 18px;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 2px rgba(255, 100, 150, 0.6);
+            backface-visibility: hidden;
+            padding: 1.8rem;
+            min-height: 540px;
+        }
+        .book-cover { transform: rotateY(0deg); background: linear-gradient(135deg, #2a1f2a, #1a0f2a); }
+        .book-back {
+            transform: rotateY(180deg);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #1a0f2a, #0a0520);
+        }
+        .page-header-3d {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #ffaa88, #ff88cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-bottom: 1px solid #ff88aa;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .page-flex { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+        .page-text {
+            flex: 2;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            text-align: justify;
+            color: #f0ddcc;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+        .page-image {
+            flex: 1;
+            text-align: center;
+        }
+        .page-image img {
+            max-width: 100%;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(255, 100, 150, 0.4);
+            max-height: 260px;
+            object-fit: cover;
+            border: 2px solid #ff66aa;
+            transition: 0.3s;
+        }
+        .book-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #ff66aa, #aa66ff);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1.8rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(255, 100, 170, 0.5);
+        }
+        .nav-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff66aa; }
+        .flip-hint { text-align: center; margin-top: 0.8rem; font-size: 0.7rem; opacity: 0.8; color: #ffaaee; }
+
+        /* Quiz Section */
+        .quiz-photo-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            padding: 0;
-            list-style: none;
+            gap: 2rem;
+            justify-content: center;
         }
-        .partner-list li {
-            padding: 0;
-            margin: 0;
+        .quiz-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 40px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 100, 150, 0.6);
+            backdrop-filter: blur(5px);
         }
-        .partner-link {
-            display: inline-block;
-            background: #34495e;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background 0.3s, transform 0.2s;
-        }
-        .partner-link:hover {
-            background: #1abc9c;
-            transform: translateY(-2px);
-        }
-        footer {
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            background: rgba(255, 100, 150, 0.2);
+            padding: 0.8rem;
+            border-radius: 28px;
+            margin-bottom: 1rem;
             text-align: center;
-            padding: 20px;
-            background: #2c3e50;
-            color: white;
-            margin-top: 40px;
+            color: #ffccdd;
         }
-        footer a {
-            color: #1abc9c;
-            text-decoration: none;
+        .answers-3d {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
         }
+        .answer-card {
+            background: rgba(30, 20, 45, 0.95);
+            border-radius: 18px;
+            padding: 0.7rem;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #ff66aa77;
+            transition: 0.2s;
+        }
+        .answer-card:hover { transform: translateY(-2px); background: rgba(255, 100, 150, 0.3); border-color: #ff66aa; }
+        .answer-card.selected-correct { background: #2a6b2a; box-shadow: 0 0 10px #8bc34a; }
+        .answer-card.selected-wrong { background: #8b2a2a; }
+        .quiz-feedback { margin: 0.8rem 0; text-align: center; font-weight: bold; color: #ffaa88; }
+        .quiz-stats { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+        .next-quiz-btn { background: linear-gradient(135deg, #ff66aa, #aa66ff); color: #000; border: none; padding: 0.6rem; border-radius: 60px; font-weight: bold; width: 100%; margin-top: 1rem; cursor: pointer; }
+        .restart-quiz { background: transparent; border: 1px solid #ff66aa; color: #ff66aa; padding: 0.2rem 0.8rem; border-radius: 30px; cursor: pointer; }
+        .photo-panel {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 40px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid #ff66aa;
+        }
+        .photo-panel img { width: 100%; border-radius: 20px; max-height: 220px; object-fit: cover; margin-bottom: 0.5rem; border: 2px solid #ff66aa; }
+        .prize-badge-mini { font-size: 2.5rem; margin-top: 0.5rem; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; text-shadow: 0 0 10px #ff66aa; } }
+        .creator-credit {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.7);
+            border-radius: 40px;
+            font-size: 0.75rem;
+            border: 1px solid #ff66aa;
+        }
+        footer { text-align: center; padding: 0.8rem; background: rgba(0,0,0,0.9); font-size: 0.7rem; margin-top: 1rem; border-top: 1px solid #ff66aa; }
+        @media (max-width: 780px) {
+            .hero h1 { font-size: 2rem; }
+            .answers-3d { grid-template-columns: 1fr; }
+            .page-flex { flex-direction: column; }
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Kortlagudem Computer Centre</h1>
-        <p>100% Free Education & Services — If you have interest, come and join us!</p>
-        <a href="learnplay.in" class="btn">Start Learning Now</a>
-    </header>
+<div id="canvas-container"></div>
 
-    <div class="container">
-        
-        <section>
-            <h2>Our Learning Platforms</h2>
-            <p>Master new digital skills through our specialized educational tracks:</p>
-            <div class="grid">
-                <div class="card">
-                    <div>
-                        <h3>LearnPlay.in</h3>
-                        <p>Interactive platform where students play to learn and build educational games.</p>
+<div class="content">
+    <div class="hero">
+        <h1>ALBERT EINSTEIN</h1>
+        <div class="sub">The Most Powerful Mind in History</div>
+        <div class="quote"><i class="fas fa-quote-left"></i> Imagination is more important than knowledge. <i class="fas fa-quote-right"></i></div>
+    </div>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="book"><i class="fas fa-book-open"></i> 3D Color Book</button>
+        <button class="tab-btn" data-tab="quiz"><i class="fas fa-brain"></i> Quiz · Prize Photos</button>
+    </div>
+
+    <!-- TAB 1: 3D COLOR BOOK -->
+    <div id="book" class="tab-panel active-panel">
+        <div class="container">
+            <div class="title-wrap"><div class="section-title"><i class="fas fa-lightbulb"></i> Living Color Book · Touch to Flip</div></div>
+            <div class="book-3d-wrapper">
+                <div class="real-book" id="real3dBook">
+                    <div class="book-cover" id="frontSide">
+                        <div class="page-header-3d">✦ Einstein's Eternal Wisdom ✦</div>
+                        <div class="page-flex" id="frontPageContent"></div>
                     </div>
-                    <a href="learnplay.in" class="btn">Open LearnPlay</a>
-                </div>
-                <div class="card">
-                    <div>
-                        <h3>Curiousatoms</h3>
-                        <p>Advanced practical sessions to explore coding, logic, and creative technology applications.</p>
+                    <div class="book-back" id="backSide">
+                        <div class="page-header-3d">✦ Continued Legacy ✦</div>
+                        <div class="page-flex" id="backPageContent"></div>
                     </div>
-                    <a href="learnplay.in" class="btn">Explore Curiousatoms</a>
                 </div>
             </div>
-        </section>
+            <div class="book-navigation">
+                <button class="nav-btn" id="prevPageBtn"><i class="fas fa-arrow-left"></i> Previous Page</button>
+                <button class="nav-btn" id="nextPageBtn">Next Page <i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="flip-hint"><i class="fas fa-hand-pointer"></i> ✨ Click/tap on the glowing book to flip it! Buttons turn pages. ✨</div>
+            <div class="creator-credit">
+                <i class="fas fa-code"></i> Created by <strong>Akshay Kumar</strong> from <strong>Kortlagudem Village</strong> · Legendary Fighters Realm
+            </div>
+        </div>
+    </div>
 
-        <section>
-            <h2>What We Do / Computer Work</h2>
-            <p>We provide training and professional services in the following domains:</p>
-            <div class="grid">
-                <div class="card">
-                    <div>
-                        <h3>Game Creation</h3>
-                        <p>Learn how to design, code, and develop your own video games from scratch.</p>
+    <!-- TAB 2: QUIZ -->
+    <div id="quiz" class="tab-panel">
+        <div class="container">
+            <div class="title-wrap"><div class="section-title"><i class="fas fa-camera"></i> 20 Questions · Correct = Next Prize Photo</div></div>
+            <div class="quiz-photo-grid">
+                <div class="quiz-panel">
+                    <div class="question-text" id="questionText">Loading wisdom...</div>
+                    <div class="answers-3d" id="answersContainer"></div>
+                    <div class="quiz-feedback" id="quizFeedback"></div>
+                    <div class="quiz-stats">
+                        <span><i class="fas fa-star"></i> Score: <span id="scoreValue">0</span> / <span id="totalQuestionsSpan">20</span></span>
+                        <span><i class="fas fa-question-circle"></i> Q<span id="currentQNum">1</span>/20</span>
+                        <button class="restart-quiz" id="restartQuizBtn"><i class="fas fa-sync-alt"></i> Restart</button>
                     </div>
-                    <a href="learnplay.in" class="btn">Create Games</a>
+                    <button class="next-quiz-btn" id="nextQuizBtn">Next Question →</button>
                 </div>
-                <div class="card">
-                    <div>
-                        <h3>Editing Business</h3>
-                        <p>Professional video, photo, and media editing services for all types of projects.</p>
-                    </div>
-                    <a href="learnplay.in" class="btn">Get Editing Work</a>
-                </div>
-                <div class="card">
-                    <div>
-                        <h3>Website Design</h3>
-                        <p>Building responsive, modern websites using HTML, CSS, and digital development tools.</p>
-                    </div>
-                    <a href="learnplay.in" class="btn">Design Websites</a>
+                <div class="photo-panel">
+                    <div class="photo-title"><i class="fas fa-image"></i> ✨ Prize Photo Gallery ✨</div>
+                    <img id="prizePhoto" src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg" alt="Prize">
+                    <div class="prize-badge-mini" id="prizeBadgeMini">📖✨</div>
+                    <p style="margin-top: 0.5rem; font-size: 0.75rem;">⭐ Each correct answer reveals the NEXT photo!<br>20/20 unlocks ALL images.</p>
+                    <div id="winMessage" style="font-weight: bold; color: #ff88cc; margin-top: 0.5rem; font-size:0.8rem;"></div>
                 </div>
             </div>
-        </section>
-
-        <section>
-            <h2>Our Editing & Business Partners</h2>
-            <p>Click on any partner's name to view their personal website portfolio:</p>
-            <ul class="partner-list">
-                <li><a class="partner-link" href="https://akshay-kumar-devarakonda.vercel.app" target="_blank">Akshay</a></li>
-                <li><a class="partner-link" href="https://devarakonda-surendar-mqpf.vercel.app/" target="_blank">Surendar</a></li>
-                <li><a class="partner-link" href="https://jashwanth-hp33.vercel.app/" target="_blank">Jashu</a></li>
-                <li><a class="partner-link" href="https://pandu-tau.vercel.app/" target="_blank">Pandu</a></li>
-                <li><a class="partner-link" href="https://venkatesh-beta.vercel.app/" target="_blank">Venky</a></li>
-                <li><a class="partner-link" href="https://varun-zeta.vercel.app/" target="_blank">Varun</a></li>
-                <li><a class="partner-link" href="https://sanjay-degala.vercel.app/" target="_blank">Sanju</a></li>
-                <li><a class="partner-link" href="https://sandeep-gunda.vercel.app/" target="_blank">Sandeep</a></li>
-            </ul>
-        </section>
-
+        </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Free Computer Centre, Kortlagudem. All Interested Learners Welcome!</p>
-        <p>Powered by <a href="learnplay.in">LearnPlay.in</a></p>
+        <p><i class="fas fa-dragon"></i> 3D Epic Book | Fighters: Kaelen & Lyra | Glowing Trees & Animals | Akshay Kumar, Kortlagudem</p>
     </footer>
+</div>
 
+<!-- Three.js Background: Named Fighters, Dragon, Trees, Animals -->
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+        }
+    }
+</script>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050520);
+    scene.fog = new THREE.FogExp2(0x050520, 0.002);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2.8, 14);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+    
+    // CSS2DRenderer for text labels
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    labelRenderer.domElement.style.left = '0px';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.getElementById('canvas-container').appendChild(labelRenderer.domElement);
+
+    const renderScene = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.7);
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 0.6;
+    const effectComposer = new EffectComposer(renderer);
+    effectComposer.addPass(renderScene);
+    effectComposer.addPass(bloomPass);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.2;
+    controls.enableZoom = true;
+    controls.target.set(0, 1.2, 0);
+
+    // Lighting
+    const ambient = new THREE.AmbientLight(0x1a1a3e);
+    scene.add(ambient);
+    const mainLight = new THREE.DirectionalLight(0xffccaa, 1.0);
+    mainLight.position.set(3, 5, 4);
+    scene.add(mainLight);
+    const backLight = new THREE.PointLight(0xff66aa, 0.6);
+    backLight.position.set(-2, 2, -4);
+    scene.add(backLight);
+    
+    // Helper function to add text label
+    function makeLabel(text, color, position) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        div.style.color = color;
+        div.style.fontSize = '18px';
+        div.style.fontWeight = 'bold';
+        div.style.fontFamily = 'Cinzel, serif';
+        div.style.textShadow = '0 0 10px rgba(0,0,0,0.8)';
+        div.style.background = 'rgba(0,0,0,0.5)';
+        div.style.padding = '4px 12px';
+        div.style.borderRadius = '30px';
+        div.style.border = `1px solid ${color}`;
+        div.style.backdropFilter = 'blur(4px)';
+        const label = new CSS2DObject(div);
+        label.position.copy(position);
+        scene.add(label);
+        return label;
+    }
+    
+    // ===== FIGHTER 1: KAELEN (Sword Master) =====
+    const kaelenGroup = new THREE.Group();
+    const bodyK = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 0.4), new THREE.MeshStandardMaterial({ color: 0xaa8866, metalness: 0.6 }));
+    bodyK.position.y = 0.4;
+    const headK = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
+    headK.position.y = 0.9;
+    const swordK = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.0, 0.08), new THREE.MeshStandardMaterial({ color: 0x88aaff, metalness: 0.9, emissive: 0x2266ff, emissiveIntensity: 0.5 }));
+    swordK.position.set(0.4, 0.5, 0.2);
+    kaelenGroup.add(bodyK, headK, swordK);
+    kaelenGroup.position.set(-2.2, 0.2, 1.5);
+    scene.add(kaelenGroup);
+    makeLabel("⚔️ KAELEN · Sword Master", "#ff88aa", new THREE.Vector3(-2.2, 1.3, 1.5));
+    
+    // ===== FIGHTER 2: LYRA (Archer Mage) =====
+    const lyraGroup = new THREE.Group();
+    const bodyL = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.75, 0.4), new THREE.MeshStandardMaterial({ color: 0x88aacc, metalness: 0.5 }));
+    bodyL.position.y = 0.4;
+    const headL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
+    headL.position.y = 0.85;
+    const bow = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.06, 8, 20), new THREE.MeshStandardMaterial({ color: 0xdd9977, metalness: 0.7 }));
+    bow.rotation.z = Math.PI / 2;
+    bow.position.set(0.45, 0.5, 0.15);
+    lyraGroup.add(bodyL, headL, bow);
+    lyraGroup.position.set(2.0, 0.2, 1.8);
+    scene.add(lyraGroup);
+    makeLabel("🏹 LYRA · Arcane Archer", "#88aaff", new THREE.Vector3(2.0, 1.25, 1.8));
+    
+    // ===== DRAGON (Glowing) =====
+    const dragonGroup = new THREE.Group();
+    const bodyDrag = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 16), new THREE.MeshStandardMaterial({ color: 0xcc5533, emissive: 0xff4411, emissiveIntensity: 0.5 }));
+    const headDrag = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.6, 8), new THREE.MeshStandardMaterial({ color: 0xdd6644, emissive: 0xff3311 }));
+    headDrag.position.set(0.65, 0.2, 0);
+    dragonGroup.add(bodyDrag, headDrag);
+    dragonGroup.position.set(-0.5, 0.5, -2.8);
+    scene.add(dragonGroup);
+    makeLabel("🐉 IGNIS · Fire Dragon", "#ff8866", new THREE.Vector3(-0.5, 1.2, -2.8));
+    
+    // ===== COLORFUL TREES =====
+    const treeColors = [0xff3366, 0x33ff66, 0xffaa33, 0xaa33ff, 0x33aaff, 0xff66cc];
+    for (let i = 0; i < 14; i++) {
+        const angle = (i / 14) * Math.PI * 2;
+        const radius = 5.5;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.45, 1.3, 6), new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.7 }));
+        trunk.position.set(x, 0.65, z);
+        scene.add(trunk);
+        const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.65, 1.1, 12), new THREE.MeshStandardMaterial({ color: treeColors[i % treeColors.length], emissive: 0x442200, emissiveIntensity: 0.35 }));
+        foliage.position.set(x, 1.4, z);
+        scene.add(foliage);
+        const topGlow = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0xff4422, emissiveIntensity: 0.5 }));
+        topGlow.position.set(x, 1.95, z);
+        scene.add(topGlow);
+    }
+    
+    // ===== ANIMALS =====
+    const animalColors = [0xff66cc, 0x66ffcc, 0xffcc66, 0xcc66ff, 0x66ccff];
+    const animals = [];
+    for (let i = 0; i < 10; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const rad = 3 + Math.random() * 2.5;
+        const x = Math.cos(angle) * rad;
+        const z = Math.sin(angle) * rad;
+        const animalGroup = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), new THREE.MeshStandardMaterial({ color: animalColors[i % animalColors.length], emissive: 0xff3388, emissiveIntensity: 0.4 }));
+        body.position.y = 0.15;
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
+        head.position.set(0.22, 0.25, 0);
+        const earL = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.18, 6), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
+        earL.position.set(-0.12, 0.38, 0);
+        const earR = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.18, 6), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
+        earR.position.set(0.12, 0.38, 0);
+        animalGroup.add(body, head, earL, earR);
+        animalGroup.position.set(x, 0.2, z);
+        scene.add(animalGroup);
+        animals.push(animalGroup);
+    }
+    
+    // ===== MOON & EINSTEIN TRIBUTE =====
+    const moonGeometry = new THREE.SphereGeometry(1.2, 128, 128);
+    const moonMaterial = new THREE.MeshStandardMaterial({ color: 0xd4b87a, roughness: 0.7, emissive: 0x442200, emissiveIntensity: 0.2 });
+    const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
+    moonMesh.position.set(-2.2, 1.8, -3.5);
+    scene.add(moonMesh);
+    
+    const einsteinGroup = new THREE.Group();
+    const coreGlow = new THREE.Mesh(new THREE.SphereGeometry(0.8, 64, 64), new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0xff4422, emissiveIntensity: 0.8 }));
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.05, 64, 200), new THREE.MeshStandardMaterial({ color: 0xff88aa, emissive: 0xff2288 }));
+    ring.rotation.x = Math.PI / 2;
+    einsteinGroup.add(coreGlow, ring);
+    einsteinGroup.position.set(2.3, 1.3, -3);
+    scene.add(einsteinGroup);
+    einsteinGroup.visible = false;
+    
+    // Particles
+    const particleCount = 600;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = [];
+    for (let i = 0; i < particleCount; i++) {
+        particlePos.push((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 10 - 3);
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePos), 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0xffaa88, size: 0.05, blending: THREE.AdditiveBlending });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+    
+    const starField = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xffaacc, size: 0.07, blending: THREE.AdditiveBlending }));
+    const starPos = [];
+    for (let i = 0; i < 1500; i++) starPos.push((Math.random() - 0.5) * 200, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 80 - 30);
+    starField.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starPos), 3));
+    scene.add(starField);
+    
+    let time = 0;
+    function animateScene() {
+        requestAnimationFrame(animateScene);
+        time += 0.012;
+        // Animate fighters
+        kaelenGroup.rotation.y = Math.sin(time * 1.5) * 0.2;
+        kaelenGroup.position.y = 0.2 + Math.sin(time * 2) * 0.03;
+        lyraGroup.rotation.y = Math.sin(time * 1.3) * 0.15;
+        lyraGroup.position.y = 0.2 + Math.cos(time * 2.2) * 0.03;
+        dragonGroup.position.y = 0.5 + Math.sin(time * 1.8) * 0.05;
+        dragonGroup.rotation.z = Math.sin(time * 1.2) * 0.1;
+        // Animate animals
+        animals.forEach((animal, i) => {
+            animal.position.y = 0.2 + Math.sin(time * 2 + i) * 0.05;
+            animal.rotation.y = Math.sin(time * 1.5 + i) * 0.3;
+        });
+        particles.rotation.y = time * 0.1;
+        moonMesh.rotation.y = time * 0.05;
+        einsteinGroup.rotation.y = time * 0.1;
+        starField.rotation.y += 0.0003;
+        controls.update();
+        effectComposer.render();
+        labelRenderer.render(scene, camera);
+    }
+    animateScene();
+    
+    window.updateFighterCosmic = (score) => {
+        if (score >= 20) {
+            moonMesh.visible = false;
+            einsteinGroup.visible = true;
+        } else if (score >= 10) {
+            moonMesh.visible = true;
+            einsteinGroup.visible = false;
+            moonMaterial.emissiveIntensity = 0.3 + (score - 10) * 0.05;
+        } else if (score >= 5) {
+            moonMesh.visible = true;
+            einsteinGroup.visible = false;
+            moonMaterial.emissiveIntensity = 0.2 + (score - 5) * 0.04;
+        } else {
+            moonMesh.visible = true;
+            einsteinGroup.visible = false;
+            moonMaterial.emissiveIntensity = 0.1;
+        }
+    };
+    window.updateFighterCosmic(0);
+</script>
+
+<script type="module">
+    // ========== 3D COLOR BOOK (Complete Biography) ==========
+    const biographyPages = [
+        { title: "🌟 Early Years & Childhood", content: "Albert Einstein was born on March 14, 1879, in Ulm. As a child, he was quiet and very curious. He loved asking questions about nature, science, light, and the universe. Even though some teachers thought he was not a good student, Einstein never stopped learning and imagining new ideas.\n\nHe later studied mathematics and physics in Zurich and worked in a patent office in Bern. During his free time, he studied science deeply and created amazing discoveries that changed the world forever.", img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg" },
+        { title: "⚛️ Miracle Year & E=mc²", content: "In 1905, known as Einstein's 'Miracle Year,' he published important scientific papers. His most famous equation became: E = mc²\n\nThis equation showed that energy and mass are connected. Einstein also developed the Theory of Relativity, which changed how people understand space, time, gravity, and the universe.", img: "https://cdn.britannica.com/30/150930-050-9FEC8B2E/Albert-Einstein-1947.jpg" },
+        { title: "🏆 Nobel Prize & Global Fame", content: "In 1921, Einstein won the Nobel Prize in Physics for his work on light and the photoelectric effect. He became one of the most famous scientists in history because of his intelligence, creativity, and imagination.\n\nDuring the rule of Adolf Hitler in Germany, Einstein moved to the United States and worked at the Institute for Advanced Study in Princeton.", img: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg" },
+        { title: "🌍 Legacy & Eternal Wisdom", content: "Einstein believed peace, kindness, and imagination were very important. One of his famous quotes was: 'Imagination is more important than knowledge.'\n\nHe died on April 18, 1955, but his discoveries still help scientists understand the universe today. Einstein remains one of the greatest minds in human history.", img: "https://www.thoughtco.com/thmb/2EoF7j3Lt8fFvS6kR9h2vP4z5y0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/einstein-blackboard-58b6f2bb5f9b58af5c5e9b7b.jpg" }
+    ];
+    
+    let currentPageIdx = 0;
+    let isFlipped = false;
+    const bookElement = document.getElementById('real3dBook');
+    const frontContainer = document.getElementById('frontPageContent');
+    const backContainer = document.getElementById('backPageContent');
+    
+    function updateBookContent() {
+        const frontData = biographyPages[currentPageIdx];
+        const backData = biographyPages[(currentPageIdx + 1) % biographyPages.length];
+        frontContainer.innerHTML = `
+            <div class="page-text">${frontData.content.replace(/\n/g, '<br>')}</div>
+            <div class="page-image"><img src="${frontData.img}" alt="Einstein"></div>
+        `;
+        backContainer.innerHTML = `
+            <div class="page-text">${backData.content.replace(/\n/g, '<br>')}</div>
+            <div class="page-image"><img src="${backData.img}" alt="Einstein"></div>
+        `;
+        if (isFlipped) { bookElement.classList.remove('flipped'); isFlipped = false; }
+    }
+    function nextPage() { currentPageIdx = (currentPageIdx + 1) % biographyPages.length; updateBookContent(); }
+    function prevPage() { currentPageIdx = (currentPageIdx - 1 + biographyPages.length) % biographyPages.length; updateBookContent(); }
+    
+    const bookWrapper = document.querySelector('.book-3d-wrapper');
+    bookWrapper.addEventListener('click', (e) => {
+        if (e.target.closest('.nav-btn')) return;
+        bookElement.classList.toggle('flipped');
+        isFlipped = !isFlipped;
+    });
+    document.getElementById('prevPageBtn').addEventListener('click', prevPage);
+    document.getElementById('nextPageBtn').addEventListener('click', nextPage);
+    updateBookContent();
+    
+    // ========== QUIZ (20 Questions) + Prize Photos ==========
+    const quizData = [
+        { question: "What is Einstein's most famous equation?", options: ["F = ma", "E = mc²", "E = hf", "PV = nRT"], correct: 1 },
+        { question: "Which year is known as Einstein's 'Annus Mirabilis'?", options: ["1905", "1915", "1921", "1895"], correct: 0 },
+        { question: "General Relativity describes gravity as?", options: ["Force", "Spacetime curvature", "Quantum exchange", "Magnetism"], correct: 1 },
+        { question: "Nobel Prize was for which discovery?", options: ["Special Relativity", "General Relativity", "Photoelectric Effect", "Brownian Motion"], correct: 2 },
+        { question: "Einstein's quote: 'God does not play ___'", options: ["Chess", "Cards", "Dice", "Lottery"], correct: 2 },
+        { question: "Prediction of General Relativity?", options: ["Black holes", "Gravitational waves", "Time dilation", "All of above"], correct: 3 },
+        { question: "Offered presidency of which country in 1952?", options: ["USA", "Germany", "Israel", "Switzerland"], correct: 2 },
+        { question: "What does 'c' in E=mc² stand for?", options: ["Curvature", "Constant", "Speed of light", "Cosmic"], correct: 2 },
+        { question: "Einstein's first job after graduation?", options: ["Professor", "Patent clerk", "Lab assistant", "Teacher"], correct: 1 },
+        { question: "Bose-Einstein statistics co-creator?", options: ["Bohr", "Heisenberg", "Satyendra Bose", "Dirac"], correct: 2 },
+        { question: "Einstein's brain had more...", options: ["Neurons", "Glial cells", "Synapses", "Size"], correct: 1 },
+        { question: "1905 special relativity paper name?", options: ["On Electrodynamics of Moving Bodies", "Heuristic View", "Inertia of Energy", "Quantum Light"], correct: 0 },
+        { question: "Immigrated to USA in?", options: ["1930", "1933", "1936", "1939"], correct: 1 },
+        { question: "Letter to FDR about?", options: ["Atomic bomb", "Neutron bomb", "Laser", "Radar"], correct: 0 },
+        { question: "Estimated IQ?", options: ["160", "180", "200+", "140"], correct: 2 },
+        { question: "Light bending proven by?", options: ["Michelson-Morley", "Eddington 1919", "Double-slit", "Cavendish"], correct: 1 },
+        { question: "Einstein-Szilard patented a?", options: ["Refrigerator", "Reactor", "Gyroscope", "Laser"], correct: 0 },
+        { question: "Princeton institute name?", options: ["IAS", "MIT", "Caltech", "Harvard"], correct: 0 },
+        { question: "Last words language?", options: ["German", "English", "French", "Unknown (nurse didn't understand)"], correct: 3 },
+        { question: "Spooky action at a distance?", options: ["Entanglement", "Tunneling", "Relativity", "Photons"], correct: 0 }
+    ];
+    
+    const prizePhotoGallery = [
+        "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg",
+        "https://cdn.britannica.com/30/150930-050-9FEC8B2E/Albert-Einstein-1947.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg",
+        "https://www.thoughtco.com/thmb/2EoF7j3Lt8fFvS6kR9h2vP4z5y0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/einstein-blackboard-58b6f2bb5f9b58af5c5e9b7b.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg"
+    ];
+    
+    let currentQ = 0, score = 0, answered = false;
+    let currentPhotoIndex = 0;
+    const questionEl = document.getElementById('questionText');
+    const answersDiv = document.getElementById('answersContainer');
+    const feedbackDiv = document.getElementById('quizFeedback');
+    const scoreSpan = document.getElementById('scoreValue');
+    const totalSpan = document.getElementById('totalQuestionsSpan');
+    const currentQSpan = document.getElementById('currentQNum');
+    const nextBtnQuiz = document.getElementById('nextQuizBtn');
+    const restartBtnQuiz = document.getElementById('restartQuizBtn');
+    const prizePhotoImg = document.getElementById('prizePhoto');
+    const prizeBadgeMini = document.getElementById('prizeBadgeMini');
+    const winMessageDiv = document.getElementById('winMessage');
+    
+    totalSpan.innerText = quizData.length;
+    
+    function updatePrizePhoto() {
+        prizePhotoImg.src = prizePhotoGallery[currentPhotoIndex % prizePhotoGallery.length];
+        prizeBadgeMini.innerHTML = `📸 Photo ${Math.min(currentPhotoIndex + 1, quizData.length)}/${quizData.length}`;
+        if (score === 20) {
+            prizeBadgeMini.innerHTML = "🏆✨ ALL 20 UNLOCKED! ✨🏆";
+            winMessageDiv.innerHTML = "🎉 PERFECT SCORE! ALL PRIZE PHOTOS REVEALED! 🎉";
+            prizePhotoImg.style.boxShadow = "0 0 25px #ff66aa";
+        } else {
+            winMessageDiv.innerHTML = `🎁 ${score} correct · Next prize at ${score+1} correct!`;
+            prizePhotoImg.style.boxShadow = "0 0 10px #ff66aa88";
+        }
+        if (window.updateFighterCosmic) window.updateFighterCosmic(score);
+    }
+    
+    function loadQuiz() {
+        answered = false;
+        const q = quizData[currentQ];
+        questionEl.innerText = q.question;
+        answersDiv.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            const card = document.createElement('div');
+            card.className = 'answer-card';
+            card.innerHTML = `<span>${String.fromCharCode(65+idx)}. ${opt}</span>`;
+            card.addEventListener('click', () => handleAnswer(idx, card));
+            answersDiv.appendChild(card);
+        });
+        feedbackDiv.innerHTML = '';
+        currentQSpan.innerText = currentQ+1;
+        nextBtnQuiz.disabled = false;
+    }
+    
+    function handleAnswer(selected, cardElem) {
+        if (answered) { feedbackDiv.innerHTML = "Already answered!"; return; }
+        const isCorrect = (selected === quizData[currentQ].correct);
+        if (isCorrect) {
+            score++;
+            currentPhotoIndex = Math.min(currentPhotoIndex + 1, quizData.length);
+            feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Correct! ✨ Next prize photo unlocked! ✨';
+            feedbackDiv.style.color = '#ff88cc';
+            cardElem.classList.add('selected-correct');
+            updatePrizePhoto();
+        } else {
+            const correctAns = quizData[currentQ].options[quizData[currentQ].correct];
+            feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. Answer: ${correctAns}.`;
+            feedbackDiv.style.color = '#ffaa88';
+            cardElem.classList.add('selected-wrong');
+            document.querySelectorAll('.answer-card')[quizData[currentQ].correct]?.classList.add('selected-correct');
+        }
+        scoreSpan.innerText = score;
+        answered = true;
+        document.querySelectorAll('.answer-card').forEach(c => { c.style.pointerEvents = 'none'; c.style.opacity = '0.8'; });
+        if (score === 20) feedbackDiv.innerHTML += " 🎉🏆 AMAZING! ALL PRIZES UNLOCKED! 🏆🎉";
+    }
+    
+    function nextQuiz() {
+        if (!answered && currentQ < quizData.length-1) { feedbackDiv.innerHTML = "⚠️ Select an answer first!"; return; }
+        if (currentQ + 1 < quizData.length) {
+            currentQ++;
+            loadQuiz();
+        } else {
+            if (!answered && currentQ === quizData.length-1) { feedbackDiv.innerHTML = "Answer the final question!"; return; }
+            feedbackDiv.innerHTML = `<i class="fas fa-trophy"></i> Quiz Complete! Score: ${score}/20. ${score === 20 ? "All photos unlocked!" : "Keep learning!"}`;
+            nextBtnQuiz.disabled = true;
+        }
+    }
+    
+    function restartQuiz() {
+        currentQ = 0; score = 0; currentPhotoIndex = 0; answered = false;
+        scoreSpan.innerText = "0";
+        loadQuiz();
+        feedbackDiv.innerHTML = "Quiz restarted! Prize photos reset.";
+        nextBtnQuiz.disabled = false;
+        updatePrizePhoto();
+        if (window.updateFighterCosmic) window.updateFighterCosmic(0);
+    }
+    
+    nextBtnQuiz.addEventListener('click', nextQuiz);
+    restartBtnQuiz.addEventListener('click', restartQuiz);
+    loadQuiz();
+    updatePrizePhoto();
+    
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panels.forEach(panel => panel.classList.remove('active-panel'));
+            document.getElementById(tabId).classList.add('active-panel');
+        });
+    });
+</script>
 </body>
 </html>
+```
