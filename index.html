@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Einstein: Touch 3D Flip Book | First Page Photo | Quiz Prize</title>
+    <title>Einstein: Touch 3D Flip Book | Quiz | Library</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -327,6 +327,26 @@
             font-size: 0.75rem;
             border: 1px solid #ff66aa;
         }
+        .library-link-btn {
+            display: inline-block;
+            margin: 0.5rem auto 0;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #ffaa66, #ff66aa);
+            border: none;
+            border-radius: 50px;
+            color: #0a0a1a;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(255,100,170,0.5);
+        }
+        .library-link-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ff66aa;
+        }
         footer { text-align: center; padding: 0.8rem; background: rgba(0,0,0,0.9); font-size: 0.7rem; margin-top: 1rem; border-top: 1px solid #ff66aa; }
         @media (max-width: 780px) {
             .hero h1 { font-size: 2rem; }
@@ -373,7 +393,8 @@
             </div>
             <div class="touch-hint"><i class="fas fa-fingerprint"></i> ✨ TOUCH / CLICK on any page to go to the next story chapter! ✨</div>
             <div class="creator-credit">
-                <i class="fas fa-code"></i> Created by <strong>Akshay Kumar</strong> from <strong>Kortlagudem Village</strong> · 3D Flip Book
+                <i class="fas fa-code"></i> Created by <strong>Akshay Kumar</strong> from <strong>Kortlagudem Village</strong> · 3D Flip Book<br>
+                <a href="einstein-library.html" class="library-link-btn" id="libraryLink"><i class="fas fa-book"></i> 📚 Browse Einstein Library</a>
             </div>
         </div>
     </div>
@@ -406,7 +427,7 @@
     </div>
 
     <footer>
-        <p><i class="fas fa-book"></i> First Page: Einstein Photo | Touch to Turn | Akshay Kumar, Kortlagudem</p>
+        <p><i class="fas fa-book"></i> First Page: Einstein Photo | Touch to Turn | <a href="einstein-library.html" style="color:#ff88cc;">Einstein Library</a> | Akshay Kumar, Kortlagudem</p>
     </footer>
 </div>
 
@@ -495,7 +516,7 @@
         { type: "story", title: "🌍 Legacy & Eternal Wisdom", content: "Einstein believed peace, kindness, and imagination were very important. One of his famous quotes: 'Imagination is more important than knowledge.'\n\nHe died on April 18, 1955, at age 76. His discoveries still help scientists understand the universe today. Einstein remains one of the greatest minds in human history.", img: "https://www.thoughtco.com/thmb/2EoF7j3Lt8fFvS6kR9h2vP4z5y0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/einstein-blackboard-58b6f2bb5f9b58af5c5e9b7b.jpg" }
     ];
     
-    let currentPagePair = 0;  // 0 = first pair (photo + story1), 1 = (story2+story3), etc.
+    let currentPagePair = 0;
     let isFlipped = false;
     const bookElement = document.getElementById('realBook3d');
     const frontStack = document.getElementById('frontStack');
@@ -513,7 +534,6 @@
     function renderPages() {
         const { left, right } = getPageData(currentPagePair);
         
-        // Render left page
         if (left.type === "photo") {
             frontStack.innerHTML = `
                 <div class="real-page page-left full-photo-page">
@@ -537,7 +557,6 @@
             `;
         }
         
-        // Render right page
         if (right) {
             if (right.type === "photo") {
                 backStack.innerHTML = `
@@ -564,57 +583,33 @@
             backStack.innerHTML = `<div class="real-page page-right"><div style="text-align:center; margin-top:40%;"><i class="fas fa-book"></i><h3>The End</h3><p>Thank you for reading!</p></div></div>`;
         }
         
-        // Reset flip orientation
         if (isFlipped) {
             bookElement.classList.remove('flipped');
             isFlipped = false;
         }
-        
         attachTouchEvents();
     }
     
     function attachTouchEvents() {
         const leftPage = frontStack.querySelector('.real-page');
         const rightPage = backStack.querySelector('.real-page');
-        
-        const turnToNext = (e) => {
-            e.stopPropagation();
-            nextPagePair();
-        };
-        
-        if (leftPage) {
-            leftPage.removeEventListener('click', turnToNext);
-            leftPage.addEventListener('click', turnToNext);
-            leftPage.style.cursor = 'pointer';
-        }
-        if (rightPage) {
-            rightPage.removeEventListener('click', turnToNext);
-            rightPage.addEventListener('click', turnToNext);
-            rightPage.style.cursor = 'pointer';
-        }
+        const turnToNext = (e) => { e.stopPropagation(); nextPagePair(); };
+        if (leftPage) { leftPage.removeEventListener('click', turnToNext); leftPage.addEventListener('click', turnToNext); leftPage.style.cursor = 'pointer'; }
+        if (rightPage) { rightPage.removeEventListener('click', turnToNext); rightPage.addEventListener('click', turnToNext); rightPage.style.cursor = 'pointer'; }
     }
     
     function nextPagePair() {
         const maxPairs = Math.ceil(bookChapters.length / 2);
-        if (currentPagePair + 1 < maxPairs) {
-            currentPagePair++;
-        } else {
-            currentPagePair = 0;  // wrap around
-        }
+        currentPagePair = (currentPagePair + 1) % maxPairs;
         renderPages();
     }
     
     function prevPagePair() {
         const maxPairs = Math.ceil(bookChapters.length / 2);
-        if (currentPagePair - 1 >= 0) {
-            currentPagePair--;
-        } else {
-            currentPagePair = maxPairs - 1;
-        }
+        currentPagePair = (currentPagePair - 1 + maxPairs) % maxPairs;
         renderPages();
     }
     
-    // Click on book wrapper to flip orientation (cover flip)
     const bookWrapper = document.querySelector('.book-wrapper');
     bookWrapper.addEventListener('click', (e) => {
         if (e.target.closest('.page-btn')) return;
@@ -628,7 +623,7 @@
     document.getElementById('nextRealBtn').addEventListener('click', nextPagePair);
     renderPages();
     
-    // ========== QUIZ (20 Questions) + Prize Photos ==========
+    // ========== QUIZ ==========
     const quizData = [
         { question: "What is Einstein's most famous equation?", options: ["F = ma", "E = mc²", "E = hf", "PV = nRT"], correct: 1 },
         { question: "Which year is known as Einstein's 'Annus Mirabilis'?", options: ["1905", "1915", "1921", "1895"], correct: 0 },
