@@ -1,12 +1,9 @@
-Here is an HTML document that creates an interactive 3D tribute to Albert Einstein. It features a color-changing 3D book with his complete biography, a 20-question quiz where each correct answer reveals a new prize photo, and an animated fantasy background with named fighters, a dragon, glowing trees, and animals.
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Einstein: 3D Epic Book | Legendary Fighters & History</title>
-    <!-- Google Fonts + Font Awesome -->
+    <title>Einstein: Touch 3D Flip Book | First Page Photo | Quiz Prize</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -52,7 +49,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
             font-family: 'Cinzel', serif;
             font-size: 3rem;
             letter-spacing: 4px;
-            text-shadow: 0 0 30px rgba(255, 100, 150, 0.9), 0 0 15px rgba(0,255,255,0.5);
+            text-shadow: 0 0 30px rgba(255,100,150,0.9), 0 0 15px rgba(0,255,255,0.5);
             animation: fadeInUp 1s ease;
         }
         .hero .sub { font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9; }
@@ -72,9 +69,9 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
             gap: 1rem;
             flex-wrap: wrap;
             padding: 0.6rem 1rem;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 100, 150, 0.5);
+            border-bottom: 1px solid rgba(255,100,150,0.5);
         }
         .tab-btn {
             background: transparent;
@@ -92,7 +89,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         .tab-btn.active {
             background: linear-gradient(135deg, #ff66aa, #aa66ff);
             color: #0a0a1a;
-            box-shadow: 0 0 15px rgba(255, 100, 170, 0.8);
+            box-shadow: 0 0 15px rgba(255,100,170,0.8);
         }
         .tab-panel {
             display: none;
@@ -117,8 +114,8 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         }
         .title-wrap { text-align: center; margin-bottom: 1rem; }
 
-        /* 3D COLOR BOOK */
-        .book-3d-wrapper {
+        /* 3D Flip Book */
+        .book-wrapper {
             display: flex;
             justify-content: center;
             perspective: 2000px;
@@ -127,74 +124,118 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         .real-book {
             width: 100%;
             max-width: 1100px;
+            height: 580px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: transform 0.6s ease;
             cursor: pointer;
-            animation: bookGlow 3s infinite alternate;
         }
-        @keyframes bookGlow {
-            0% { filter: drop-shadow(0 0 8px rgba(255, 100, 150, 0.5)); }
-            100% { filter: drop-shadow(0 0 25px rgba(100, 150, 255, 0.8)); }
+        .real-book.flipped {
+            transform: rotateY(-180deg);
         }
-        .real-book.flipped { transform: rotateY(-180deg); }
-        .book-cover, .book-back {
-            width: 100%;
-            background: linear-gradient(145deg, #2a1a2a, #1a0a2a);
-            border-radius: 18px;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 2px rgba(255, 100, 150, 0.6);
-            backface-visibility: hidden;
-            padding: 1.8rem;
-            min-height: 540px;
-        }
-        .book-cover { transform: rotateY(0deg); background: linear-gradient(135deg, #2a1f2a, #1a0f2a); }
-        .book-back {
-            transform: rotateY(180deg);
+        .book-cover-front, .book-cover-back {
             position: absolute;
-            top: 0;
-            left: 0;
-            background: linear-gradient(135deg, #1a0f2a, #0a0520);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #3a2a3a, #1a0a2a);
+            border-radius: 18px;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 2px rgba(255,100,150,0.6);
+            backface-visibility: hidden;
+            overflow: hidden;
         }
-        .page-header-3d {
+        .book-cover-front { transform: rotateY(0deg); background: linear-gradient(135deg, #2a1f2a, #1a0f2a); }
+        .book-cover-back { transform: rotateY(180deg); background: linear-gradient(135deg, #1a0f2a, #0a0520); }
+        .page-stack {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .real-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fef4dc;
+            border-radius: 14px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            backface-visibility: hidden;
+            transform-origin: left center;
+            transition: transform 0.6s cubic-bezier(0.23,1,0.32,1);
+            overflow-y: auto;
+            padding: 2rem;
+            color: #2c2c2c;
+            cursor: pointer;
+        }
+        .real-page::-webkit-scrollbar { width: 5px; }
+        .real-page::-webkit-scrollbar-track { background: #d4c49c; border-radius: 10px; }
+        .real-page::-webkit-scrollbar-thumb { background: #b8860b; border-radius: 10px; }
+        .page-left { background: #fff6e0; }
+        .page-right { background: #fffbf0; }
+        .page-header-real {
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #ffaa88, #ff88cc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            border-bottom: 1px solid #ff88aa;
+            font-size: 1.4rem;
+            color: #b8860b;
+            border-bottom: 2px solid #d4a373;
             margin-bottom: 1rem;
             display: inline-block;
         }
-        .page-flex { display: flex; flex-wrap: wrap; gap: 1.5rem; }
-        .page-text {
+        .page-content-real {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .page-text-real {
             flex: 2;
             font-size: 0.95rem;
             line-height: 1.65;
             text-align: justify;
-            color: #f0ddcc;
-            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+            color: #3a2a1a;
         }
-        .page-image {
+        .page-image-real {
             flex: 1;
             text-align: center;
         }
-        .page-image img {
+        .page-image-real img {
             max-width: 100%;
-            border-radius: 14px;
-            box-shadow: 0 8px 25px rgba(255, 100, 150, 0.4);
-            max-height: 260px;
+            border-radius: 12px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            max-height: 220px;
             object-fit: cover;
-            border: 2px solid #ff66aa;
-            transition: 0.3s;
+            border: 1px solid #b8860b;
         }
-        .book-navigation {
+        .full-photo-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        .full-photo-page img {
+            max-width: 90%;
+            max-height: 65%;
+            border-radius: 20px;
+            border: 3px solid #b8860b;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+        .full-photo-page h2 {
+            color: #b8860b;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 0.5rem;
+        }
+        .full-photo-page p {
+            font-style: italic;
+            color: #5a4a2a;
+        }
+        .page-controls {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
-        .nav-btn {
+        .page-btn {
             background: linear-gradient(135deg, #ff66aa, #aa66ff);
             color: #fff;
             border: none;
@@ -204,10 +245,18 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
             font-weight: bold;
             font-size: 1rem;
             transition: 0.3s;
-            box-shadow: 0 0 10px rgba(255, 100, 170, 0.5);
+            box-shadow: 0 0 10px rgba(255,100,170,0.5);
         }
-        .nav-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff66aa; }
-        .flip-hint { text-align: center; margin-top: 0.8rem; font-size: 0.7rem; opacity: 0.8; color: #ffaaee; }
+        .page-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff66aa; }
+        .touch-hint {
+            text-align: center;
+            margin-top: 0.8rem;
+            font-size: 0.7rem;
+            opacity: 0.9;
+            color: #ffaaee;
+            animation: pulseText 2s infinite;
+        }
+        @keyframes pulseText { 0% { opacity: 0.6; } 100% { opacity: 1; text-shadow: 0 0 5px #ff66aa; } }
 
         /* Quiz Section */
         .quiz-photo-grid {
@@ -219,16 +268,16 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         .quiz-panel {
             flex: 2;
             min-width: 300px;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.85);
             border-radius: 40px;
             padding: 1.5rem;
-            border: 1px solid rgba(255, 100, 150, 0.6);
+            border: 1px solid rgba(255,100,150,0.6);
             backdrop-filter: blur(5px);
         }
         .question-text {
             font-size: 1.15rem;
             font-weight: 600;
-            background: rgba(255, 100, 150, 0.2);
+            background: rgba(255,100,150,0.2);
             padding: 0.8rem;
             border-radius: 28px;
             margin-bottom: 1rem;
@@ -242,7 +291,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
             margin-bottom: 1rem;
         }
         .answer-card {
-            background: rgba(30, 20, 45, 0.95);
+            background: rgba(30,20,45,0.95);
             border-radius: 18px;
             padding: 0.7rem;
             text-align: center;
@@ -250,7 +299,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
             border: 1px solid #ff66aa77;
             transition: 0.2s;
         }
-        .answer-card:hover { transform: translateY(-2px); background: rgba(255, 100, 150, 0.3); border-color: #ff66aa; }
+        .answer-card:hover { transform: translateY(-2px); background: rgba(255,100,150,0.3); border-color: #ff66aa; }
         .answer-card.selected-correct { background: #2a6b2a; box-shadow: 0 0 10px #8bc34a; }
         .answer-card.selected-wrong { background: #8b2a2a; }
         .quiz-feedback { margin: 0.8rem 0; text-align: center; font-weight: bold; color: #ffaa88; }
@@ -260,7 +309,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         .photo-panel {
             flex: 1;
             min-width: 250px;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.85);
             border-radius: 40px;
             padding: 1.2rem;
             text-align: center;
@@ -282,7 +331,8 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         @media (max-width: 780px) {
             .hero h1 { font-size: 2rem; }
             .answers-3d { grid-template-columns: 1fr; }
-            .page-flex { flex-direction: column; }
+            .page-content-real { flex-direction: column; }
+            .real-page { padding: 1rem; }
         }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -299,33 +349,31 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     </div>
 
     <div class="tabs-container">
-        <button class="tab-btn active" data-tab="book"><i class="fas fa-book-open"></i> 3D Color Book</button>
+        <button class="tab-btn active" data-tab="book"><i class="fas fa-book-open"></i> Touch 3D Flip Book</button>
         <button class="tab-btn" data-tab="quiz"><i class="fas fa-brain"></i> Quiz · Prize Photos</button>
     </div>
 
-    <!-- TAB 1: 3D COLOR BOOK -->
+    <!-- TAB 1: 3D FLIP BOOK -->
     <div id="book" class="tab-panel active-panel">
         <div class="container">
-            <div class="title-wrap"><div class="section-title"><i class="fas fa-lightbulb"></i> Living Color Book · Touch to Flip</div></div>
-            <div class="book-3d-wrapper">
-                <div class="real-book" id="real3dBook">
-                    <div class="book-cover" id="frontSide">
-                        <div class="page-header-3d">✦ Einstein's Eternal Wisdom ✦</div>
-                        <div class="page-flex" id="frontPageContent"></div>
+            <div class="title-wrap"><div class="section-title"><i class="fas fa-hand-peace"></i> Touch Any Page · Next Story Chapter</div></div>
+            <div class="book-wrapper">
+                <div class="real-book" id="realBook3d">
+                    <div class="book-cover-front" id="frontCover">
+                        <div class="page-stack" id="frontStack"></div>
                     </div>
-                    <div class="book-back" id="backSide">
-                        <div class="page-header-3d">✦ Continued Legacy ✦</div>
-                        <div class="page-flex" id="backPageContent"></div>
+                    <div class="book-cover-back" id="backCover">
+                        <div class="page-stack" id="backStack"></div>
                     </div>
                 </div>
             </div>
-            <div class="book-navigation">
-                <button class="nav-btn" id="prevPageBtn"><i class="fas fa-arrow-left"></i> Previous Page</button>
-                <button class="nav-btn" id="nextPageBtn">Next Page <i class="fas fa-arrow-right"></i></button>
+            <div class="page-controls">
+                <button class="page-btn" id="prevRealBtn"><i class="fas fa-arrow-left"></i> Previous Page Pair</button>
+                <button class="page-btn" id="nextRealBtn">Next Page Pair <i class="fas fa-arrow-right"></i></button>
             </div>
-            <div class="flip-hint"><i class="fas fa-hand-pointer"></i> ✨ Click/tap on the glowing book to flip it! Buttons turn pages. ✨</div>
+            <div class="touch-hint"><i class="fas fa-fingerprint"></i> ✨ TOUCH / CLICK on any page to go to the next story chapter! ✨</div>
             <div class="creator-credit">
-                <i class="fas fa-code"></i> Created by <strong>Akshay Kumar</strong> from <strong>Kortlagudem Village</strong> · Legendary Fighters Realm
+                <i class="fas fa-code"></i> Created by <strong>Akshay Kumar</strong> from <strong>Kortlagudem Village</strong> · 3D Flip Book
             </div>
         </div>
     </div>
@@ -358,11 +406,11 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     </div>
 
     <footer>
-        <p><i class="fas fa-dragon"></i> 3D Epic Book | Fighters: Kaelen & Lyra | Glowing Trees & Animals | Akshay Kumar, Kortlagudem</p>
+        <p><i class="fas fa-book"></i> First Page: Einstein Photo | Touch to Turn | Akshay Kumar, Kortlagudem</p>
     </footer>
 </div>
 
-<!-- Three.js Background: Named Fighters, Dragon, Trees, Animals -->
+<!-- Three.js Background -->
 <script type="importmap">
     {
         "imports": {
@@ -377,28 +425,18 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x050520);
     scene.fog = new THREE.FogExp2(0x050520, 0.002);
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2.8, 14);
+    camera.position.set(0, 1.5, 13);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
-    
-    // CSS2DRenderer for text labels
-    const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0px';
-    labelRenderer.domElement.style.left = '0px';
-    labelRenderer.domElement.style.pointerEvents = 'none';
-    document.getElementById('canvas-container').appendChild(labelRenderer.domElement);
 
     const renderScene = new RenderPass(scene, camera);
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.7);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.9, 0.4, 0.7);
     bloomPass.threshold = 0.1;
     bloomPass.strength = 0.6;
     const effectComposer = new EffectComposer(renderer);
@@ -410,134 +448,21 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.2;
     controls.enableZoom = true;
-    controls.target.set(0, 1.2, 0);
+    controls.target.set(0, 0.5, 0);
 
-    // Lighting
     const ambient = new THREE.AmbientLight(0x1a1a3e);
     scene.add(ambient);
     const mainLight = new THREE.DirectionalLight(0xffccaa, 1.0);
     mainLight.position.set(3, 5, 4);
     scene.add(mainLight);
-    const backLight = new THREE.PointLight(0xff66aa, 0.6);
-    backLight.position.set(-2, 2, -4);
-    scene.add(backLight);
     
-    // Helper function to add text label
-    function makeLabel(text, color, position) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        div.style.color = color;
-        div.style.fontSize = '18px';
-        div.style.fontWeight = 'bold';
-        div.style.fontFamily = 'Cinzel, serif';
-        div.style.textShadow = '0 0 10px rgba(0,0,0,0.8)';
-        div.style.background = 'rgba(0,0,0,0.5)';
-        div.style.padding = '4px 12px';
-        div.style.borderRadius = '30px';
-        div.style.border = `1px solid ${color}`;
-        div.style.backdropFilter = 'blur(4px)';
-        const label = new CSS2DObject(div);
-        label.position.copy(position);
-        scene.add(label);
-        return label;
-    }
+    const starField = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xffaacc, size: 0.07, blending: THREE.AdditiveBlending }));
+    const starPos = [];
+    for (let i = 0; i < 1500; i++) starPos.push((Math.random() - 0.5) * 200, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 80 - 30);
+    starField.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starPos), 3));
+    scene.add(starField);
     
-    // ===== FIGHTER 1: KAELEN (Sword Master) =====
-    const kaelenGroup = new THREE.Group();
-    const bodyK = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 0.4), new THREE.MeshStandardMaterial({ color: 0xaa8866, metalness: 0.6 }));
-    bodyK.position.y = 0.4;
-    const headK = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
-    headK.position.y = 0.9;
-    const swordK = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.0, 0.08), new THREE.MeshStandardMaterial({ color: 0x88aaff, metalness: 0.9, emissive: 0x2266ff, emissiveIntensity: 0.5 }));
-    swordK.position.set(0.4, 0.5, 0.2);
-    kaelenGroup.add(bodyK, headK, swordK);
-    kaelenGroup.position.set(-2.2, 0.2, 1.5);
-    scene.add(kaelenGroup);
-    makeLabel("⚔️ KAELEN · Sword Master", "#ff88aa", new THREE.Vector3(-2.2, 1.3, 1.5));
-    
-    // ===== FIGHTER 2: LYRA (Archer Mage) =====
-    const lyraGroup = new THREE.Group();
-    const bodyL = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.75, 0.4), new THREE.MeshStandardMaterial({ color: 0x88aacc, metalness: 0.5 }));
-    bodyL.position.y = 0.4;
-    const headL = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
-    headL.position.y = 0.85;
-    const bow = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.06, 8, 20), new THREE.MeshStandardMaterial({ color: 0xdd9977, metalness: 0.7 }));
-    bow.rotation.z = Math.PI / 2;
-    bow.position.set(0.45, 0.5, 0.15);
-    lyraGroup.add(bodyL, headL, bow);
-    lyraGroup.position.set(2.0, 0.2, 1.8);
-    scene.add(lyraGroup);
-    makeLabel("🏹 LYRA · Arcane Archer", "#88aaff", new THREE.Vector3(2.0, 1.25, 1.8));
-    
-    // ===== DRAGON (Glowing) =====
-    const dragonGroup = new THREE.Group();
-    const bodyDrag = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 16), new THREE.MeshStandardMaterial({ color: 0xcc5533, emissive: 0xff4411, emissiveIntensity: 0.5 }));
-    const headDrag = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.6, 8), new THREE.MeshStandardMaterial({ color: 0xdd6644, emissive: 0xff3311 }));
-    headDrag.position.set(0.65, 0.2, 0);
-    dragonGroup.add(bodyDrag, headDrag);
-    dragonGroup.position.set(-0.5, 0.5, -2.8);
-    scene.add(dragonGroup);
-    makeLabel("🐉 IGNIS · Fire Dragon", "#ff8866", new THREE.Vector3(-0.5, 1.2, -2.8));
-    
-    // ===== COLORFUL TREES =====
-    const treeColors = [0xff3366, 0x33ff66, 0xffaa33, 0xaa33ff, 0x33aaff, 0xff66cc];
-    for (let i = 0; i < 14; i++) {
-        const angle = (i / 14) * Math.PI * 2;
-        const radius = 5.5;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.45, 1.3, 6), new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.7 }));
-        trunk.position.set(x, 0.65, z);
-        scene.add(trunk);
-        const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.65, 1.1, 12), new THREE.MeshStandardMaterial({ color: treeColors[i % treeColors.length], emissive: 0x442200, emissiveIntensity: 0.35 }));
-        foliage.position.set(x, 1.4, z);
-        scene.add(foliage);
-        const topGlow = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0xff4422, emissiveIntensity: 0.5 }));
-        topGlow.position.set(x, 1.95, z);
-        scene.add(topGlow);
-    }
-    
-    // ===== ANIMALS =====
-    const animalColors = [0xff66cc, 0x66ffcc, 0xffcc66, 0xcc66ff, 0x66ccff];
-    const animals = [];
-    for (let i = 0; i < 10; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const rad = 3 + Math.random() * 2.5;
-        const x = Math.cos(angle) * rad;
-        const z = Math.sin(angle) * rad;
-        const animalGroup = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), new THREE.MeshStandardMaterial({ color: animalColors[i % animalColors.length], emissive: 0xff3388, emissiveIntensity: 0.4 }));
-        body.position.y = 0.15;
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
-        head.position.set(0.22, 0.25, 0);
-        const earL = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.18, 6), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
-        earL.position.set(-0.12, 0.38, 0);
-        const earR = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.18, 6), new THREE.MeshStandardMaterial({ color: 0xffaa88 }));
-        earR.position.set(0.12, 0.38, 0);
-        animalGroup.add(body, head, earL, earR);
-        animalGroup.position.set(x, 0.2, z);
-        scene.add(animalGroup);
-        animals.push(animalGroup);
-    }
-    
-    // ===== MOON & EINSTEIN TRIBUTE =====
-    const moonGeometry = new THREE.SphereGeometry(1.2, 128, 128);
-    const moonMaterial = new THREE.MeshStandardMaterial({ color: 0xd4b87a, roughness: 0.7, emissive: 0x442200, emissiveIntensity: 0.2 });
-    const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
-    moonMesh.position.set(-2.2, 1.8, -3.5);
-    scene.add(moonMesh);
-    
-    const einsteinGroup = new THREE.Group();
-    const coreGlow = new THREE.Mesh(new THREE.SphereGeometry(0.8, 64, 64), new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0xff4422, emissiveIntensity: 0.8 }));
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.05, 64, 200), new THREE.MeshStandardMaterial({ color: 0xff88aa, emissive: 0xff2288 }));
-    ring.rotation.x = Math.PI / 2;
-    einsteinGroup.add(coreGlow, ring);
-    einsteinGroup.position.set(2.3, 1.3, -3);
-    scene.add(einsteinGroup);
-    einsteinGroup.visible = false;
-    
-    // Particles
-    const particleCount = 600;
+    const particleCount = 400;
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = [];
     for (let i = 0; i < particleCount; i++) {
@@ -548,99 +473,160 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
     
-    const starField = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xffaacc, size: 0.07, blending: THREE.AdditiveBlending }));
-    const starPos = [];
-    for (let i = 0; i < 1500; i++) starPos.push((Math.random() - 0.5) * 200, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 80 - 30);
-    starField.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starPos), 3));
-    scene.add(starField);
-    
     let time = 0;
     function animateScene() {
         requestAnimationFrame(animateScene);
-        time += 0.012;
-        // Animate fighters
-        kaelenGroup.rotation.y = Math.sin(time * 1.5) * 0.2;
-        kaelenGroup.position.y = 0.2 + Math.sin(time * 2) * 0.03;
-        lyraGroup.rotation.y = Math.sin(time * 1.3) * 0.15;
-        lyraGroup.position.y = 0.2 + Math.cos(time * 2.2) * 0.03;
-        dragonGroup.position.y = 0.5 + Math.sin(time * 1.8) * 0.05;
-        dragonGroup.rotation.z = Math.sin(time * 1.2) * 0.1;
-        // Animate animals
-        animals.forEach((animal, i) => {
-            animal.position.y = 0.2 + Math.sin(time * 2 + i) * 0.05;
-            animal.rotation.y = Math.sin(time * 1.5 + i) * 0.3;
-        });
+        time += 0.008;
         particles.rotation.y = time * 0.1;
-        moonMesh.rotation.y = time * 0.05;
-        einsteinGroup.rotation.y = time * 0.1;
         starField.rotation.y += 0.0003;
         controls.update();
         effectComposer.render();
-        labelRenderer.render(scene, camera);
     }
     animateScene();
-    
-    window.updateFighterCosmic = (score) => {
-        if (score >= 20) {
-            moonMesh.visible = false;
-            einsteinGroup.visible = true;
-        } else if (score >= 10) {
-            moonMesh.visible = true;
-            einsteinGroup.visible = false;
-            moonMaterial.emissiveIntensity = 0.3 + (score - 10) * 0.05;
-        } else if (score >= 5) {
-            moonMesh.visible = true;
-            einsteinGroup.visible = false;
-            moonMaterial.emissiveIntensity = 0.2 + (score - 5) * 0.04;
-        } else {
-            moonMesh.visible = true;
-            einsteinGroup.visible = false;
-            moonMaterial.emissiveIntensity = 0.1;
-        }
-    };
-    window.updateFighterCosmic(0);
 </script>
 
 <script type="module">
-    // ========== 3D COLOR BOOK (Complete Biography) ==========
-    const biographyPages = [
-        { title: "🌟 Early Years & Childhood", content: "Albert Einstein was born on March 14, 1879, in Ulm. As a child, he was quiet and very curious. He loved asking questions about nature, science, light, and the universe. Even though some teachers thought he was not a good student, Einstein never stopped learning and imagining new ideas.\n\nHe later studied mathematics and physics in Zurich and worked in a patent office in Bern. During his free time, he studied science deeply and created amazing discoveries that changed the world forever.", img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg" },
-        { title: "⚛️ Miracle Year & E=mc²", content: "In 1905, known as Einstein's 'Miracle Year,' he published important scientific papers. His most famous equation became: E = mc²\n\nThis equation showed that energy and mass are connected. Einstein also developed the Theory of Relativity, which changed how people understand space, time, gravity, and the universe.", img: "https://cdn.britannica.com/30/150930-050-9FEC8B2E/Albert-Einstein-1947.jpg" },
-        { title: "🏆 Nobel Prize & Global Fame", content: "In 1921, Einstein won the Nobel Prize in Physics for his work on light and the photoelectric effect. He became one of the most famous scientists in history because of his intelligence, creativity, and imagination.\n\nDuring the rule of Adolf Hitler in Germany, Einstein moved to the United States and worked at the Institute for Advanced Study in Princeton.", img: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg" },
-        { title: "🌍 Legacy & Eternal Wisdom", content: "Einstein believed peace, kindness, and imagination were very important. One of his famous quotes was: 'Imagination is more important than knowledge.'\n\nHe died on April 18, 1955, but his discoveries still help scientists understand the universe today. Einstein remains one of the greatest minds in human history.", img: "https://www.thoughtco.com/thmb/2EoF7j3Lt8fFvS6kR9h2vP4z5y0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/einstein-blackboard-58b6f2bb5f9b58af5c5e9b7b.jpg" }
+    // ===== BOOK DATA: First Page = Full Einstein Photo =====
+    const bookChapters = [
+        { type: "photo", title: "Albert Einstein", content: "The Most Powerful Mind in History", img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg" },
+        { type: "story", title: "🌟 Early Years & Childhood", content: "Albert Einstein was born on March 14, 1879, in Ulm, Germany. As a child, he was quiet and very curious. He loved asking questions about nature, science, light, and the universe. Even though some teachers thought he was not a good student, Einstein never stopped learning and imagining new ideas.\n\nHe later studied mathematics and physics in Zurich and worked in a patent office in Bern. During his free time, he studied science deeply and created amazing discoveries that changed the world forever.", img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg" },
+        { type: "story", title: "⚛️ Miracle Year & E=mc²", content: "In 1905, known as Einstein's 'Annus Mirabilis' (Miracle Year), he published four groundbreaking scientific papers. His most famous equation became: E = mc²\n\nThis equation showed that energy and mass are connected. Einstein also developed the Special Theory of Relativity, which changed how people understand space, time, gravity, and the universe.", img: "https://cdn.britannica.com/30/150930-050-9FEC8B2E/Albert-Einstein-1947.jpg" },
+        { type: "story", title: "🏆 Nobel Prize & Global Fame", content: "In 1921, Einstein won the Nobel Prize in Physics for his work on the photoelectric effect. He became one of the most famous scientists in history.\n\nDuring the rule of Adolf Hitler, Einstein moved to the United States and worked at the Institute for Advanced Study in Princeton, New Jersey.", img: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg" },
+        { type: "story", title: "🌍 Legacy & Eternal Wisdom", content: "Einstein believed peace, kindness, and imagination were very important. One of his famous quotes: 'Imagination is more important than knowledge.'\n\nHe died on April 18, 1955, at age 76. His discoveries still help scientists understand the universe today. Einstein remains one of the greatest minds in human history.", img: "https://www.thoughtco.com/thmb/2EoF7j3Lt8fFvS6kR9h2vP4z5y0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/einstein-blackboard-58b6f2bb5f9b58af5c5e9b7b.jpg" }
     ];
     
-    let currentPageIdx = 0;
+    let currentPagePair = 0;  // 0 = first pair (photo + story1), 1 = (story2+story3), etc.
     let isFlipped = false;
-    const bookElement = document.getElementById('real3dBook');
-    const frontContainer = document.getElementById('frontPageContent');
-    const backContainer = document.getElementById('backPageContent');
+    const bookElement = document.getElementById('realBook3d');
+    const frontStack = document.getElementById('frontStack');
+    const backStack = document.getElementById('backStack');
     
-    function updateBookContent() {
-        const frontData = biographyPages[currentPageIdx];
-        const backData = biographyPages[(currentPageIdx + 1) % biographyPages.length];
-        frontContainer.innerHTML = `
-            <div class="page-text">${frontData.content.replace(/\n/g, '<br>')}</div>
-            <div class="page-image"><img src="${frontData.img}" alt="Einstein"></div>
-        `;
-        backContainer.innerHTML = `
-            <div class="page-text">${backData.content.replace(/\n/g, '<br>')}</div>
-            <div class="page-image"><img src="${backData.img}" alt="Einstein"></div>
-        `;
-        if (isFlipped) { bookElement.classList.remove('flipped'); isFlipped = false; }
+    function getPageData(pairIndex) {
+        const leftIdx = pairIndex * 2;
+        const rightIdx = leftIdx + 1;
+        return {
+            left: bookChapters[leftIdx],
+            right: rightIdx < bookChapters.length ? bookChapters[rightIdx] : null
+        };
     }
-    function nextPage() { currentPageIdx = (currentPageIdx + 1) % biographyPages.length; updateBookContent(); }
-    function prevPage() { currentPageIdx = (currentPageIdx - 1 + biographyPages.length) % biographyPages.length; updateBookContent(); }
     
-    const bookWrapper = document.querySelector('.book-3d-wrapper');
+    function renderPages() {
+        const { left, right } = getPageData(currentPagePair);
+        
+        // Render left page
+        if (left.type === "photo") {
+            frontStack.innerHTML = `
+                <div class="real-page page-left full-photo-page">
+                    <div class="full-photo-page">
+                        <h2>${left.title}</h2>
+                        <img src="${left.img}" alt="Einstein">
+                        <p>${left.content}</p>
+                        <p style="margin-top: 1rem; font-size: 0.8rem;"><i class="fas fa-hand-point-right"></i> Touch anywhere to continue</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            frontStack.innerHTML = `
+                <div class="real-page page-left">
+                    <div class="page-header-real">${left.title}</div>
+                    <div class="page-content-real">
+                        <div class="page-text-real">${left.content.replace(/\n/g, '<br>')}</div>
+                        <div class="page-image-real"><img src="${left.img}" alt="Einstein"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render right page
+        if (right) {
+            if (right.type === "photo") {
+                backStack.innerHTML = `
+                    <div class="real-page page-right full-photo-page">
+                        <div class="full-photo-page">
+                            <h2>${right.title}</h2>
+                            <img src="${right.img}" alt="Einstein">
+                            <p>${right.content}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                backStack.innerHTML = `
+                    <div class="real-page page-right">
+                        <div class="page-header-real">${right.title}</div>
+                        <div class="page-content-real">
+                            <div class="page-text-real">${right.content.replace(/\n/g, '<br>')}</div>
+                            <div class="page-image-real"><img src="${right.img}" alt="Einstein"></div>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            backStack.innerHTML = `<div class="real-page page-right"><div style="text-align:center; margin-top:40%;"><i class="fas fa-book"></i><h3>The End</h3><p>Thank you for reading!</p></div></div>`;
+        }
+        
+        // Reset flip orientation
+        if (isFlipped) {
+            bookElement.classList.remove('flipped');
+            isFlipped = false;
+        }
+        
+        attachTouchEvents();
+    }
+    
+    function attachTouchEvents() {
+        const leftPage = frontStack.querySelector('.real-page');
+        const rightPage = backStack.querySelector('.real-page');
+        
+        const turnToNext = (e) => {
+            e.stopPropagation();
+            nextPagePair();
+        };
+        
+        if (leftPage) {
+            leftPage.removeEventListener('click', turnToNext);
+            leftPage.addEventListener('click', turnToNext);
+            leftPage.style.cursor = 'pointer';
+        }
+        if (rightPage) {
+            rightPage.removeEventListener('click', turnToNext);
+            rightPage.addEventListener('click', turnToNext);
+            rightPage.style.cursor = 'pointer';
+        }
+    }
+    
+    function nextPagePair() {
+        const maxPairs = Math.ceil(bookChapters.length / 2);
+        if (currentPagePair + 1 < maxPairs) {
+            currentPagePair++;
+        } else {
+            currentPagePair = 0;  // wrap around
+        }
+        renderPages();
+    }
+    
+    function prevPagePair() {
+        const maxPairs = Math.ceil(bookChapters.length / 2);
+        if (currentPagePair - 1 >= 0) {
+            currentPagePair--;
+        } else {
+            currentPagePair = maxPairs - 1;
+        }
+        renderPages();
+    }
+    
+    // Click on book wrapper to flip orientation (cover flip)
+    const bookWrapper = document.querySelector('.book-wrapper');
     bookWrapper.addEventListener('click', (e) => {
-        if (e.target.closest('.nav-btn')) return;
-        bookElement.classList.toggle('flipped');
-        isFlipped = !isFlipped;
+        if (e.target.closest('.page-btn')) return;
+        if (e.target.classList.contains('book-cover-front') || e.target.classList.contains('book-cover-back') || e.target === bookElement) {
+            bookElement.classList.toggle('flipped');
+            isFlipped = !isFlipped;
+        }
     });
-    document.getElementById('prevPageBtn').addEventListener('click', prevPage);
-    document.getElementById('nextPageBtn').addEventListener('click', nextPage);
-    updateBookContent();
+    
+    document.getElementById('prevRealBtn').addEventListener('click', prevPagePair);
+    document.getElementById('nextRealBtn').addEventListener('click', nextPagePair);
+    renderPages();
     
     // ========== QUIZ (20 Questions) + Prize Photos ==========
     const quizData = [
@@ -666,7 +652,7 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         { question: "Spooky action at a distance?", options: ["Entanglement", "Tunneling", "Relativity", "Photons"], correct: 0 }
     ];
     
-    const prizePhotoGallery = [
+    const prizePhotos = [
         "https://upload.wikimedia.org/wikipedia/commons/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg",
         "https://cdn.britannica.com/30/150930-050-9FEC8B2E/Albert-Einstein-1947.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/d/d3/Albert_Einstein_Head.jpg",
@@ -675,36 +661,35 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
     ];
     
     let currentQ = 0, score = 0, answered = false;
-    let currentPhotoIndex = 0;
+    let currentPhotoIdx = 0;
     const questionEl = document.getElementById('questionText');
     const answersDiv = document.getElementById('answersContainer');
     const feedbackDiv = document.getElementById('quizFeedback');
     const scoreSpan = document.getElementById('scoreValue');
     const totalSpan = document.getElementById('totalQuestionsSpan');
     const currentQSpan = document.getElementById('currentQNum');
-    const nextBtnQuiz = document.getElementById('nextQuizBtn');
-    const restartBtnQuiz = document.getElementById('restartQuizBtn');
-    const prizePhotoImg = document.getElementById('prizePhoto');
-    const prizeBadgeMini = document.getElementById('prizeBadgeMini');
-    const winMessageDiv = document.getElementById('winMessage');
+    const nextBtn = document.getElementById('nextQuizBtn');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const prizeImg = document.getElementById('prizePhoto');
+    const prizeBadge = document.getElementById('prizeBadgeMini');
+    const winMsg = document.getElementById('winMessage');
     
     totalSpan.innerText = quizData.length;
     
-    function updatePrizePhoto() {
-        prizePhotoImg.src = prizePhotoGallery[currentPhotoIndex % prizePhotoGallery.length];
-        prizeBadgeMini.innerHTML = `📸 Photo ${Math.min(currentPhotoIndex + 1, quizData.length)}/${quizData.length}`;
+    function updatePrize() {
+        prizeImg.src = prizePhotos[currentPhotoIdx % prizePhotos.length];
+        prizeBadge.innerHTML = `📸 Photo ${Math.min(currentPhotoIdx + 1, quizData.length)}/${quizData.length}`;
         if (score === 20) {
-            prizeBadgeMini.innerHTML = "🏆✨ ALL 20 UNLOCKED! ✨🏆";
-            winMessageDiv.innerHTML = "🎉 PERFECT SCORE! ALL PRIZE PHOTOS REVEALED! 🎉";
-            prizePhotoImg.style.boxShadow = "0 0 25px #ff66aa";
+            prizeBadge.innerHTML = "🏆✨ ALL 20 UNLOCKED! ✨🏆";
+            winMsg.innerHTML = "🎉 PERFECT SCORE! ALL PRIZE PHOTOS REVEALED! 🎉";
+            prizeImg.style.boxShadow = "0 0 25px #ff66aa";
         } else {
-            winMessageDiv.innerHTML = `🎁 ${score} correct · Next prize at ${score+1} correct!`;
-            prizePhotoImg.style.boxShadow = "0 0 10px #ff66aa88";
+            winMsg.innerHTML = `🎁 ${score} correct · Next prize at ${score+1} correct!`;
+            prizeImg.style.boxShadow = "0 0 10px #ff66aa88";
         }
-        if (window.updateFighterCosmic) window.updateFighterCosmic(score);
     }
     
-    function loadQuiz() {
+    function loadQuestion() {
         answered = false;
         const q = quizData[currentQ];
         questionEl.innerText = q.question;
@@ -718,24 +703,24 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         });
         feedbackDiv.innerHTML = '';
         currentQSpan.innerText = currentQ+1;
-        nextBtnQuiz.disabled = false;
+        nextBtn.disabled = false;
     }
     
-    function handleAnswer(selected, cardElem) {
+    function handleAnswer(selected, card) {
         if (answered) { feedbackDiv.innerHTML = "Already answered!"; return; }
         const isCorrect = (selected === quizData[currentQ].correct);
         if (isCorrect) {
             score++;
-            currentPhotoIndex = Math.min(currentPhotoIndex + 1, quizData.length);
+            currentPhotoIdx = Math.min(currentPhotoIdx + 1, quizData.length);
             feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Correct! ✨ Next prize photo unlocked! ✨';
             feedbackDiv.style.color = '#ff88cc';
-            cardElem.classList.add('selected-correct');
-            updatePrizePhoto();
+            card.classList.add('selected-correct');
+            updatePrize();
         } else {
             const correctAns = quizData[currentQ].options[quizData[currentQ].correct];
             feedbackDiv.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. Answer: ${correctAns}.`;
             feedbackDiv.style.color = '#ffaa88';
-            cardElem.classList.add('selected-wrong');
+            card.classList.add('selected-wrong');
             document.querySelectorAll('.answer-card')[quizData[currentQ].correct]?.classList.add('selected-correct');
         }
         scoreSpan.innerText = score;
@@ -744,33 +729,33 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
         if (score === 20) feedbackDiv.innerHTML += " 🎉🏆 AMAZING! ALL PRIZES UNLOCKED! 🏆🎉";
     }
     
-    function nextQuiz() {
+    function nextQuestion() {
         if (!answered && currentQ < quizData.length-1) { feedbackDiv.innerHTML = "⚠️ Select an answer first!"; return; }
         if (currentQ + 1 < quizData.length) {
             currentQ++;
-            loadQuiz();
+            loadQuestion();
         } else {
             if (!answered && currentQ === quizData.length-1) { feedbackDiv.innerHTML = "Answer the final question!"; return; }
             feedbackDiv.innerHTML = `<i class="fas fa-trophy"></i> Quiz Complete! Score: ${score}/20. ${score === 20 ? "All photos unlocked!" : "Keep learning!"}`;
-            nextBtnQuiz.disabled = true;
+            nextBtn.disabled = true;
         }
     }
     
     function restartQuiz() {
-        currentQ = 0; score = 0; currentPhotoIndex = 0; answered = false;
+        currentQ = 0; score = 0; currentPhotoIdx = 0; answered = false;
         scoreSpan.innerText = "0";
-        loadQuiz();
+        loadQuestion();
         feedbackDiv.innerHTML = "Quiz restarted! Prize photos reset.";
-        nextBtnQuiz.disabled = false;
-        updatePrizePhoto();
-        if (window.updateFighterCosmic) window.updateFighterCosmic(0);
+        nextBtn.disabled = false;
+        updatePrize();
     }
     
-    nextBtnQuiz.addEventListener('click', nextQuiz);
-    restartBtnQuiz.addEventListener('click', restartQuiz);
-    loadQuiz();
-    updatePrizePhoto();
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    loadQuestion();
+    updatePrize();
     
+    // Tabs
     const tabs = document.querySelectorAll('.tab-btn');
     const panels = document.querySelectorAll('.tab-panel');
     tabs.forEach(btn => {
@@ -785,4 +770,3 @@ Here is an HTML document that creates an interactive 3D tribute to Albert Einste
 </script>
 </body>
 </html>
-```
