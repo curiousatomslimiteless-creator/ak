@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Einstein's Library | Essential Books</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+            color: #f0e6d2;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        /* subtle animated stars background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 60px 80px, #ffddaa, rgba(0,0,0,0));
+            background-size: 200px 200px, 150px 150px;
+            background-repeat: repeat;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #ffcc88, #ff88cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255,100,150,0.3);
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(255,100,150,0.2);
+            border: 1px solid #ff66aa;
+            border-radius: 40px;
+            color: #ffccaa;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            background: #ff66aa;
+            color: #0a0a1a;
+            box-shadow: 0 0 15px #ff66aa;
+        }
+        /* Book Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .book-card {
+            background: rgba(20, 20, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255,100,150,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            border-color: #ff88aa;
+        }
+        .book-cover {
+            height: 240px;
+            overflow: hidden;
+            background: #2a1a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        .book-card:hover .book-cover img {
+            transform: scale(1.03);
+        }
+        .book-info {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: #ffccaa;
+            margin-bottom: 0.5rem;
+        }
+        .book-author {
+            font-size: 0.9rem;
+            color: #ffaa88;
+            margin-bottom: 0.8rem;
+            font-style: italic;
+        }
+        .book-description {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+        .book-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,100,150,0.2);
+            color: #ffccaa;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.2s;
+            width: fit-content;
+            border: 1px solid #ff66aa77;
+        }
+        .book-link:hover {
+            background: #ff66aa;
+            color: #0a0a1a;
+            border-color: #ff66aa;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,100,150,0.3);
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .books-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-book"></i> Einstein's Library</h1>
+        <p>Essential readings to understand the man, his mind, and his universe</p>
+        <a href="#" class="back-link" id="backToMainBtn"><i class="fas fa-arrow-left"></i> Back to Main Tribute</a>
+    </div>
+
+    <div class="books-grid">
+        <!-- Book 1 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://upload.wikimedia.org/wikipedia/en/3/3f/Relativity_-_Albert_Einstein.jpg" alt="Relativity cover" onerror="this.src='https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200&h=240&fit=crop'">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Relativity: The Special and the General Theory</div>
+                <div class="book-author">Albert Einstein</div>
+                <div class="book-description">Einstein's own clear, accessible explanation of the theory of relativity. A must-read for anyone wanting to understand space, time, and gravity directly from the master.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 2 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://upload.wikimedia.org/wikipedia/en/7/7c/Einstein_-_Ideas_and_Opinions.jpg" alt="Ideas and Opinions" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&h=240&fit=crop'">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Ideas and Opinions</div>
+                <div class="book-author">Albert Einstein</div>
+                <div class="book-description">A collection of Einstein's essays, letters, and speeches on science, politics, religion, and humanity. Reveals his profound wisdom beyond physics.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 3 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://upload.wikimedia.org/wikipedia/en/2/2a/Einstein_His_Life_and_Universe.jpg" alt="Einstein: His Life and Universe" onerror="this.src='https://images.unsplash.com/photo-1589998059170-9fd8ca4d5efd?w=200&h=240&fit=crop'">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Einstein: His Life and Universe</div>
+                <div class="book-author">Walter Isaacson</div>
+                <div class="book-description">The definitive biography based on newly released personal letters. A gripping narrative of Einstein's scientific genius, personal struggles, and political activism.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 4 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://upload.wikimedia.org/wikipedia/en/4/45/Subtle_is_the_Lord.jpg" alt="Subtle is the Lord" onerror="this.src='https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200&h=240&fit=crop'">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Subtle is the Lord: The Science and Life of Albert Einstein</div>
+                <div class="book-author">Abraham Pais</div>
+                <div class="book-description">A classic scientific biography by a physicist who knew Einstein personally. Deep insights into the creation of relativity and quantum theory.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 5 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&h=240&fit=crop" alt="The World As I See It">
+            </div>
+            <div class="book-info">
+                <div class="book-title">The World As I See It</div>
+                <div class="book-author">Albert Einstein</div>
+                <div class="book-description">A fascinating collection of Einstein's non-scientific writings: his views on peace, education, morality, and the meaning of life. Short, profound, and timeless.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 6 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://images.unsplash.com/photo-1589998059170-9fd8ca4d5efd?w=200&h=240&fit=crop" alt="Einstein's Cosmos">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Einstein's Cosmos: How Albert Einstein's Vision Transformed Our Understanding of Space and Time</div>
+                <div class="book-author">Michio Kaku</div>
+                <div class="book-description">A brilliant, accessible tour of Einstein's universe by a renowned physicist. Explains complex ideas with clarity and wonder.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 7 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://upload.wikimedia.org/wikipedia/en/8/8e/Quantum_Man.jpg" alt="Quantum Man" onerror="this.src='https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200&h=240&fit=crop'">
+            </div>
+            <div class="book-info">
+                <div class="book-title">Quantum Man: Richard Feynman's Life in Science</div>
+                <div class="book-author">Lawrence M. Krauss</div>
+                <div class="book-description">While about Feynman, this book contextualizes the post-Einstein era. A brilliant companion to understand the quantum world Einstein helped create.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <!-- Book 8 -->
+        <div class="book-card">
+            <div class="book-cover">
+                <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=240&fit=crop" alt="The Evolution of Physics">
+            </div>
+            <div class="book-info">
+                <div class="book-title">The Evolution of Physics</div>
+                <div class="book-author">Albert Einstein & Leopold Infeld</div>
+                <div class="book-description">A historical account of the development of physics from classical mechanics to relativity, co-authored by Einstein. Accessible and enlightening.</div>
+                <a href="#" class="book-link" target="_blank">Learn more <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><i class="fas fa-atom"></i> “The important thing is not to stop questioning.” — Albert Einstein</p>
+        <p style="margin-top: 0.5rem;">Curated list of essential readings | Created with ❤️ for curious minds</p>
+    </footer>
+</div>
+
+<script>
+    // Link back to main tribute page (the 3D book and quiz page)
+    // Since the previous page might be in a different file, we set a relative path or use history.back
+    // For demonstration, we make the button go back to previous page or to a known URL.
+    const backBtn = document.getElementById('backToMainBtn');
+    backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Try to go back in history if previous page was the main tribute
+        if (document.referrer && document.referrer.includes('einstein')) {
+            window.history.back();
+        } else {
+            // Fallback: alert and provide a link
+            alert('Please navigate to the main Einstein tribute page to return to the 3D book and quiz.\nYou can open the previous HTML file (index.html) from your files.');
+            // Optionally open a new window: but better to just let user click manually
+        }
+    });
+    // Make book links open a new tab with placeholder info
+    document.querySelectorAll('.book-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('This is a placeholder link. In a real library, you would be directed to a book store or library catalog.');
+        });
+    });
+</script>
+</body>
+</html>
